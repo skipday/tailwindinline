@@ -1,47 +1,46 @@
 import CheatSheet from './cheatsheet.js'
 import { arbitrarySupportedClasses } from './cheatsheet.js';
 import juice from 'juice';
+import twClasses from './allTailwindClasses.json' assert {type: 'json'}
 
-const convertToCSS = (classNames) => {
-    //tailwind to css
-    classNames = classNames.split(/\s+/).map((i) => '.' + i.trim());
-    let cssCode = ``;
-    CheatSheet.forEach((element) => {
-        element.content.forEach((content) => {
-            content.table.forEach((list) => {
-                // console.log(list)
-                if (classNames.includes(list[0])) {
-                    const semicolon = list[1][list[1].length - 1] !== ';' ? ';' : '';
-                    if (list.length === 3) cssCode += `${list[1]}${semicolon} `;
-                    else cssCode += `${list[2]}${semicolon} \n`;
-                }
-
-                if (classNames.includes(list[1])) {
-                    const semicolon = list[2][list[2].length - 1] !== ';' ? ';' : '';
-                    cssCode += `${list[2]}${semicolon} `;
-                }
-            });
-        });
-    });
-
-    // Check for arbitrary values
-    const arbitraryClasses = classNames.filter((className) => className.includes('['));
-    arbitraryClasses.forEach((className) => {
-        const property = className.split('-[')[0].replace('.', '');
-        const properyValue = className.match(/(?<=\[)[^\][]*(?=])/g)[0];
-        if (arbitrarySupportedClasses[property]) {
-            cssCode += `${arbitrarySupportedClasses[property]}: ${properyValue};`;
-        }
-    });
-
-    return cssCode;
-};
+const convertCss = (classArr) => {
+    //for each key in twclasses, see if it matches the current string. If it does, replace the string with the value of the key
+    classArr = classArr.split(' ')
+    let result = []
+    Object.keys(twClasses).forEach(key => {
+        //TODO: with an input mb-[24px], look for the first mb, get the key value pair and replace the value with the content inside []
+        classArr.forEach(str => {
+            if(key !== str) return
+            let tempres = JSON.stringify(twClasses[key]).replace(/"/g, '').replace('{', '').replace('}', ';')
+            result.push(tempres)
+        })
+    })
+    return result.join(' ')
+}
 
 const main = (html) => {
+    //given an input html string, match tag for tag with class="" and replace the tag with convertCss + juice result
+    var regex = new RegExp('\<(?<TAG>[a-z]{1,15}) (?:(?:class|className)="(?<CLASS>.+?)")?', 'g')
+    html = html.replace(regex, (match,tag,tagMatch) => {
+        //extract and convert classnames
+        let tempCss = convertCss(tagMatch)
+        const toJuice = `${tag} { ${tempCss} }`
+        
+        let testStr = '<div></div>'
+        console.log(juice.inlineContent(testStr, toJuice))
+    })
+    // console.log(html)
+    /*
     let css = html.match(/class="(.*)"/g).join().replace('class="', '').replace('"', '')
+    var tempreg = /\<(?<TAG>[a-z]{1,15}) (?:(?:class|className)=(?<CLASS>(?:'.+?')|".+?"))?/g
     var regex = new RegExp('\<(?<TAG>[a-z]{1,15}) (?:(?:class|className)="(?<CLASS>.+?)")?', 'g')
     let match = Array.from(html.matchAll(regex), (m) => [m.groups.TAG, m.groups.CLASS])
-    console.log(match)
+    match.forEach(arr => {
+        convertCss(match[0][1])
+    })
+    */
+    //spit out the 
+
     /*
     css = `${match[0]} { ${match[1]} }`
     console.log(css)*/
