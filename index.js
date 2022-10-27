@@ -1,14 +1,14 @@
 import twClasses from './classList.json'
 //key = key from tailwind object. str = each string from class=""
 const objToCssString = (key, str) => {
-    str = str.insert(0, '.')
     if(typeof str !== 'string') { //{ [ gap: 1rem, row-gap: 1rem ] } => gap: 1rem; row-gap: 1rem;
+        str[0] = str[0].insert(0, '.')
         let tempObj = twClasses[str[0]]
         Object.keys(tempObj).forEach(key => tempObj[key] = tempObj[key] = str[1].replace(/(\[|\])/g, ''))
         return JSON.stringify(twClasses[key]).replace(/(,|})/g, ';').replace(/("|{)/g, '')
     }
     //more than one key. TODO: I think this will break with multiple keys & values with , in them. Like multiple box shadow properties? ignored for now.
-    else if (Object.keys(twClasses[key]).length >= 2) return JSON.stringify(twClasses[key]).replace(/(,|})/g, ';').replace(/("|{)/g, '')
+    else if (Object.keys(twClasses[key]).length >= 2) {return JSON.stringify(twClasses[key]).replace(/(,|})/g, ';').replace(/("|{)/g, '')}
     else  return JSON.stringify(twClasses[key]).replace(/(})/g, ';').replace(/("|{)/g, '')
 }
 
