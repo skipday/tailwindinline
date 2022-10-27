@@ -1,0 +1,27 @@
+{
+  "name": "@ashnpmalmsten/tailwindinline",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "tailwind html to inline style html",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skipday/tailwindinline.git"
+  },
+  "keywords": [
+    "tailwind",
+    "inline",
+    "styling",
+    "css",
+    "style"
+  ],
+  "author": "Ash Malmsten",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/skipday/tailwindinline/issues"
+  },
+  "homepage": "https://github.com/skipday/tailwindinline#readme"
+}
