@@ -3,9 +3,8 @@ import fs from 'fs'
 import cssObj from './alltailwind.js'
 
 //removes preceeding -
-let result = {}
-Object.keys(cssObj).
-  filter((key) => !['hover', 'focus', '@media', 'placeholder', 'transition', 'animation', 'delay'].some(el => key.includes(el))).
-  reduce((cur, key) => { return Object.assign(cur, { [key.replace(/_/g, '-')]: (cssObj[key]).map(val => val.replace( /([A-Z])/g, "-$1").toLowerCase()) })}, result);
+let mt
+Object.keys(cssObj).forEach(key => (key === 'mt_2') ? mt = key :  '')
+console.log(mt)
 
-fs.writeFileSync('./allTailwindClasses.json', JSON.stringify(result, null, 2) , 'utf-8');
+fs.writeFileSync('./allTailwindClasses.json', JSON.stringify(cssObj, null, 2) , 'utf-8');
