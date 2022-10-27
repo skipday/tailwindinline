@@ -1,5 +1,5 @@
 {
-  "name": "@ashnpmalmsten/tailwindinline",
+  "name": "tailwindinline",
   "version": "0.1.0",
   "type": "module",
   "description": "tailwind html to inline style html",
@@ -18,7 +18,7 @@
     "css",
     "style"
   ],
-  "author": "Ash Malmsten",
+  "author": "Ash Malmsten <ashmalmsten@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/skipday/tailwindinline/issues"

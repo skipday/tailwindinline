@@ -1,5 +1,4 @@
-import twClasses from './classList.json' assert {type: 'json'}
-
+import twClasses from './classList.json'
 //key = key from tailwind object. str = each string from class=""
 const objToCssString = (key, str) => {
     str = str.insert(0, '.')
@@ -32,6 +31,7 @@ String.prototype.insert = function (index, string) {
 };
 
 const main = (html) => {
+    if(!html) return
     var regex = new RegExp(String.raw`<(?<TAG>.+?) (?:(?:class|className)=(?<CLASS>(?:".+?"))).*?>`, 'g')
     html = html.replace(regex, (match,tag,tagMatch) => {
         tagMatch = tagMatch.replace(/"/g, '')
