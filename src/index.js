@@ -1,10 +1,9 @@
-import twClasses from './regexedclasses.json' assert {type: 'json'}
+import twClasses from './classList.json' assert {type: 'json'}
 
 //key = key from tailwind object. str = each string from class=""
 const objToCssString = (key, str) => {
     str = str.insert(0, '.')
-    //custom value ex. max-w-[400px]
-    if(typeof str !== 'string') {
+    if(typeof str !== 'string') { //{ [ gap: 1rem, row-gap: 1rem ] } => gap: 1rem; row-gap: 1rem;
         let tempObj = twClasses[str[0]]
         Object.keys(tempObj).forEach(key => tempObj[key] = tempObj[key] = str[1].replace(/(\[|\])/g, ''))
         return JSON.stringify(twClasses[key]).replace(/(,|})/g, ';').replace(/("|{)/g, '')
