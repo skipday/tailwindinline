@@ -1,4 +1,4 @@
-import twClasses from './classList.json' assert {type: 'json' }
+import twClasses from './classList.json'// assert {type: 'json' }
 //key = key from tailwind object. str = each string from class=""
 const objToCssString = (key, str) => {
     if(typeof str !== 'string') { //{ [ gap: 1rem, row-gap: 1rem ] } => gap: 1rem; row-gap: 1rem;
