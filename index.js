@@ -1,4 +1,4 @@
-import twClasses from './classList.json' //assert {type: 'json' }
+import twClasses from './classList.json' assert {type: 'json' }
 //key = key from tailwind object. str = each string from class=""
 const objToCssString = (key, str) => {
     if(typeof str !== 'string') { //{ [ gap: 1rem, row-gap: 1rem ] } => gap: 1rem; row-gap: 1rem;
@@ -15,6 +15,7 @@ const objToCssString = (key, str) => {
 const convertCss = (classArr) => {
     classArr = classArr.replace(/\w[a-zA-Z0-9-]+(?<VALUE>\[.+?\])/g, (match, value) => Array.from([match.replace(value, '4'), value])).split(' ')
     .map(e => (e.match(/,/g)) ? e.split(',') : e)
+    if(!classArr.includes('box-content') && !classArr.includes('box-border')) classArr.push('box-border')
     let result = []
     Object.keys(twClasses).forEach(key => {
         classArr.forEach(str => {
