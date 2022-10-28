@@ -1,4 +1,4 @@
-import twClasses from './classList.json'
+import twClasses from './classList.json' //assert {type: 'json' }
 //key = key from tailwind object. str = each string from class=""
 const objToCssString = (key, str) => {
     if(typeof str !== 'string') { //{ [ gap: 1rem, row-gap: 1rem ] } => gap: 1rem; row-gap: 1rem;
@@ -32,12 +32,19 @@ String.prototype.insert = function (index, string) {
 
 const main = (html) => {
     if(!html) return
-    var regex = new RegExp(String.raw`<(?<TAG>.+?) (?:(?:class|className)=(?<CLASS>(?:".+?"))).*?>`, 'g')
+    var regex = new RegExp(String.raw`<(?!\/).+?>`, 'g')
     html = html.replace(regex, (match,tag,tagMatch) => {
-        tagMatch = tagMatch.replace(/"/g, '')
-        let tempCss = convertCss(tagMatch)
-        const styleTag = ` style="${tempCss}"`
-        return match.insert(-1, styleTag)
+        let styles = ''
+        match = match.replace(/(?:(?:class|className)=(?<CLASS>(?:".+?"))).*?/g, (m,innerClasses) => {
+            innerClasses = innerClasses.replace(/"|'/g, '')
+            styles = convertCss(innerClasses)
+            return m
+        })
+        if(!styles) return match
+        const styleTag = ` style="${styles}"`
+        //maybe if ; at end of style tag dont add it? does two fuck it up? Probably.
+        if(match.match(/(?:style=".+?")/g)) return match.replace(/(?:style=".+?")/g, (e,m,x) => e.insert(-1, '; ' + styles))
+        else return match.insert(-1, styleTag )
     })
     return html
 }
