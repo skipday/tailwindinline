@@ -18,4 +18,5 @@ const htmlWithInlineStyles = convert('<div class="pt-2 pb-[40px] border-2 border
 - [x] fix syntax of some classnames in classList.json (ex: placeholder:moz-[...])
 - [x] custom tailwind classes
 - [ ] add all tailwind auto-added classes (right now only border-box is auto-added)
+- [ ] import and use a custom tailwindconfig
 - [ ] implement more consistent regex file
