@@ -1,7 +1,7 @@
 import classes from './classes.json' assert {type: 'json' }
 const defaultClasses = new Map(classes)
 
-const convertToString = (gottenClass, customvalue) => Object.entries(gottenClass).map(([key, val]) => customvalue ? `${key}: ${customvalue};` : `${key}: ${val};`);
+const convertToString = (gottenClass, customvalue) => gottenClass ? Object.entries(gottenClass).map(([key, val]) => customvalue ? `${key}: ${customvalue};` : `${key}: ${val};`) : '';
 
 const convertCss = (classArr) => {
     classArr = classArr.replace(/\w[a-zA-Z0-9-]+(?<VALUE>\[.+?\])/g, (match, value) => Array.from([match.replace(/\[.+?\]/g, !value.includes('#') ? '4' : 'white'), value])).split(' ').map(e => (e.match(/,/g)) ? e.split(',') : e)
