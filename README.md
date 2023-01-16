@@ -2,7 +2,7 @@
 npm install tailwindinline
 
 import convert from 'tailwindinline'
-const htmlWithInlineStyles = convert("<div class="pt-2 pb-[40px] border-2 border-[#0f0]">")
+const htmlWithInlineStyles = convert('<div class="pt-2 pb-[40px] border-2 border-[#0f0]">')
 /*
 <div 
 	class="pt-2 pb-[40px] border-2 border-[#0f0]" 
