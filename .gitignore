@@ -2,3 +2,5 @@
 node_modules/
 api/
 test.js
+classList.json
+tableFromJson.js
