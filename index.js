@@ -1,28 +1,22 @@
-import twClasses from './classList.json' assert {type: 'json' }
-const classList = new Map(Object.entries(twClasses));
-//key = key from tailwind object. str = each string from class=""
-const objToCssString = (key, customValue = false, tag) => {
-    if(customValue) Object.entries(key)[0][1] = customValue
-    return Object.entries(key)[0].join(': ')
-}
+import classes from './classes.json' assert {type: 'json' }
+const defaultClasses = new Map(classes)
+
+const convertToString = (gottenClass, customvalue) => gottenClass ? Object.entries(gottenClass).map(([key, val]) => customvalue ? `${key}: ${customvalue};` : `${key}: ${val};`) : '';
 
 const convertCss = (classArr) => {
-    classArr = classArr.replace(/\w[a-zA-Z0-9-]+(?<VALUE>\[(.+?)\])/g, (match, value) => Array.from([match.replace(value, '4'), value])).split(' ')
-    .map(e => (e.match(/,/g)) ? e.split(',') : e)
+    classArr = classArr.replace(/\w[a-zA-Z0-9-]+(?<VALUE>\[.+?\])/g, (match, value) => Array.from([match.replace(/\[.+?\]/g, !value.includes('#') ? '4' : 'white'), value])).split(' ').map(e => (e.match(/,/g)) ? e.split(',') : e)
     if(!classArr.includes('box-content') && !classArr.includes('box-border')) classArr.push('box-border')
-    let result = []
-    classArr.forEach(classN => {
-        if(typeof classN !== 'string') {
-            classN[1] = classN[1].replace(/\[|\]/g, '')
-            classList.has(`.${classN[0]}`) ? result.push(objToCssString(classList.get(`.${classN[0]}`),classN[1])) : ''
-        } else classList.has(`.${classN}`) ? result.push(objToCssString(classList.get(`.${classN}`))) : ''
-    })
-    return result.join('; ')
+    return classArr.map((value) => {
+        let classstr, customvalue;
+        if(typeof value !== 'string') [classstr, customvalue] = value
+        else classstr = value
+        return convertToString(defaultClasses.get(`.${classstr}`), customvalue ? customvalue.replace(/\[|\]/g, '') : null)
+    }).flat().join(' ')
 }
 
 String.prototype.insert = function (index, string) {
     var ind = index < 0 ? this.length + index  :  index;
-    return  this.substring(0, ind) + string + this.substr(ind);
+    return this.substring(0, ind) + string + this.substr(ind);
 };
 
 const main = (html) => {
@@ -30,14 +24,13 @@ const main = (html) => {
     var regex = new RegExp(String.raw`<(?!\/).+?>`, 'g')
     return html.replace(regex, (match) => {
         let styles = ''
-        match = match.replace(/(?:(?:class|className)=(?<CLASS>(?:".+?"))).*?/g, (m,innerClasses) => {
+        match = match.replace(/(?:(?:class|className)=(?<CLASS>(?:".+?"))).*?/g, (innerClassMatch,innerClasses) => {
             innerClasses = innerClasses.replace(/"|'/g, '')
             styles = convertCss(innerClasses)
-            return m
+            return innerClassMatch
         })
         if(!styles) return match
         const styleTag = ` style="${styles}"`
-        //maybe if ; at end of style tag dont add it? does two fuck it up? Probably.
         if(match.match(/(?:style=".+?")/g)) return match.replace(/(?:style=".+?")/g, (e,m,x) => e.insert(-1, '; ' + styles))
         else return match.insert(-1, styleTag )
     })

@@ -1,6 +1,8 @@
 #directories
 node_modules/
 api/
-test.js
+testingStuff.js
+classList.json
+tableFromJson.js
 classList_old.json
 test.html
