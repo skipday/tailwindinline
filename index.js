@@ -22,7 +22,7 @@ String.prototype.insert = function (index, string) {
 const main = (html) => {
     if(!html) return
     var regex = new RegExp(String.raw`<(?!\/).+?>`, 'g')
-    html = html.replace(regex, (match,tag,tagMatch) => {
+    return html.replace(regex, (match) => {
         let styles = ''
         match = match.replace(/(?:(?:class|className)=(?<CLASS>(?:".+?"))).*?/g, (innerClassMatch,innerClasses) => {
             innerClasses = innerClasses.replace(/"|'/g, '')
@@ -34,7 +34,6 @@ const main = (html) => {
         if(match.match(/(?:style=".+?")/g)) return match.replace(/(?:style=".+?")/g, (e,m,x) => e.insert(-1, '; ' + styles))
         else return match.insert(-1, styleTag )
     })
-    return html
 }
 
 export default main

@@ -10,11 +10,9 @@ function getClassPattern(input: string) {
     return quoteChar !== undefined ? `${classDeclarationPattern}${quoteChar}${classValuePattern}${quoteChar}` : ""
 }
 
-
 function extractGroups(input: string) {
     return input.match(new RegExp(getClassPattern(input)))?.groups
 }
-
 
 function extractTags(input: string) {
     console.log(`\ninput = ${input}`)
@@ -25,7 +23,5 @@ function extractTags(input: string) {
     }
 }
 
-
 extractTags(`<div class="shadow text-blue-500 mb-2" data="ad" anotherattr="sm-vl"><span className='bg-green-200'>hello there</span></div><div data='asd'>asd</div>`)
 extractTags(`<div class="sha'text'-2"><span className='bg-"green"-200'>`)
-
