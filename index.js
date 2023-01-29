@@ -1,8 +1,6 @@
 import classes from './classes.json' assert {type: 'json' }
-import { TAILWIND_DEFAULTS, CLASSES_IN_TAG, CLASS_ATTRIBUTE, CUSTOM_VALUE, MATCH_TAG } from './CONSTANTS.js'
+import { TAILWIND_DEFAULTS, CLASSES_IN_TAG, CLASS_ATTRIBUTE, CUSTOM_VALUE, MATCH_TAG, TAG_NAME, DEFAULTS_PER_TAG } from './CONSTANTS.js'
 const defaultClasses = new Map(classes)
-
-
 
 const convertToString = (gottenClass, customvalue) => gottenClass ? Object.entries(gottenClass).map(([key, val]) => customvalue ? `${key}: ${customvalue};` : `${key}: ${val};`) : '';
 
@@ -36,6 +34,8 @@ const main = (html) => {
             styles = convertCss(innerClasses)
             return innerClassMatch
         })
+        const [_, tagName] = TAG_NAME.exec(match)
+        if(DEFAULTS_PER_TAG.has(tagName)) styles = DEFAULTS_PER_TAG.get(tagName) + styles || ''
         if(!styles) return match
         const styleTag = ` style="${styles}"`
         if(match.match(/(?:style=".+?")/g)) return match.replace(/(?:style=".+?")/g, (e,m,x) => e.insert(-1, '; ' + styles))
