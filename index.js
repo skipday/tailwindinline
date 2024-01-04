@@ -1,4 +1,7 @@
-import classes from './classes.json' assert {type: 'json' }
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+
+const classes = require('./classes.json')
 import { TAILWIND_DEFAULTS, CLASSES_IN_TAG, CLASS_ATTRIBUTE, CUSTOM_VALUE, MATCH_TAG, TAG_NAME, DEFAULTS_PER_TAG } from './CONSTANTS.js'
 const defaultClasses = new Map(classes)
 
