@@ -1,6 +1,5 @@
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-
 const classes = require('./classes.json')
 import { TAILWIND_DEFAULTS, CLASSES_IN_TAG, CLASS_ATTRIBUTE, CUSTOM_VALUE, MATCH_TAG, TAG_NAME, DEFAULTS_PER_TAG } from './CONSTANTS.js'
 const defaultClasses = new Map(classes)
@@ -24,21 +23,21 @@ const convertCss = (classArr) => {
 }
 
 String.prototype.insert = function (index, string) {
-    var ind = index < 0 ? this.length + index  :  index;
-    return this.substring(0, ind) + string + this.substring(0, ind);
-};
+    const ind = index < 0 ? this.length + index : index;
+    return this.substring(0, ind) + string + this.substring(ind);
+ };
 
 const main = (html) => {
     if(!html) return
     return html.replace(MATCH_TAG, (match) => {
         let styles = ''
-        match = match.replace(CLASSES_IN_TAG, (innerClassMatch,innerClasses) => {
+        match = match.replace(CLASSES_IN_TAG, (innerClassMatch, innerClasses) => {
             innerClasses = innerClasses.replace(/"|'/g, '')
             styles = convertCss(innerClasses)
             return innerClassMatch
         })
-        const [_, tagName] = TAG_NAME.exec(match)
-        if(DEFAULTS_PER_TAG.has(tagName)) styles = DEFAULTS_PER_TAG.get(tagName) + styles || ''
+        const res = TAG_NAME.exec(match)
+        if(DEFAULTS_PER_TAG.has(res?.[1])) styles = DEFAULTS_PER_TAG.get(res?.[1]) + styles || ''
         if(!styles) return match
         const styleTag = ` style="${styles}"`
         if(match.match(/(?:style=".+?")/g)) return match.replace(/(?:style=".+?")/g, (e,m,x) => e.insert(-1, '; ' + styles))
