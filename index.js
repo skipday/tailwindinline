@@ -39,6 +39,7 @@ export default class TailwindToInline {
                 styles = this.convertCss(innerClasses)
                 return innerClassMatch
             })
+            TAG_NAME.lastIndex = 0
             const res = TAG_NAME.exec(match)
             if(DEFAULTS_PER_TAG.has(res?.[1])) styles = DEFAULTS_PER_TAG.get(res?.[1]) + styles || ''
             if(!styles) return match
