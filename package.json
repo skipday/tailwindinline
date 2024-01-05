@@ -1,6 +1,6 @@
 {
   "name": "tailwindinline",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "description": "tailwind html to inline style html",
   "main": "index.js",
