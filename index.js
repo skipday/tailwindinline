@@ -44,7 +44,10 @@ export default class TailwindToInline {
             if(DEFAULTS_PER_TAG.has(res?.[1])) styles = DEFAULTS_PER_TAG.get(res?.[1]) + styles || ''
             if(!styles) return match
             const styleTag = ` style="${styles}"`
-            if(match.match(/(?:style=".+?")/g)) return match.replace(/(?:style=".+?")/g, (e,m,x) => e.insert(-1, '; ' + styles))
+            if(match.match(/(?:style=".+?")/g)) return match.replace(/(?:style=".+?")/g, (e,m,x) => {
+                const existing = e.match(/(?:style="(.+?)")/)[1]
+                return `style="${styles} ${existing}"`
+            })
             else return match.insert(-1, styleTag )
         })
     }
