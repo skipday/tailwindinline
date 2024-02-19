@@ -2,6 +2,9 @@ import fs from 'fs'
 import { exec } from 'child_process'
 import { CLASSES_IN_TAG, CLASS_ATTRIBUTE, CUSTOM_VALUE, MATCH_TAG, TAG_NAME, DEFAULTS_PER_TAG } from './CONSTANTS.js'
 import postcss from 'postcss'
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 String.prototype.insert = function (index, string) {
     const ind = index < 0 ? this.length + index : index;
@@ -55,10 +58,10 @@ export default class TailwindToInline {
     }
 
     clearOutputFolder = () => {
-        fs.readdir('./convert', (err, files) => {
+        fs.readdir(`${__dirname}/convert`, (err, files) => {
             if (err) throw err
             for (const file of files) {
-                fs.unlink(`./convert/${file}`, err => {
+                fs.unlink(`${__dirname}/convert/${file}`, err => {
                     if (err) throw err
                 })
             }
@@ -66,15 +69,16 @@ export default class TailwindToInline {
     }
 
     cssFromHtml = async (html) => {
-        if(!fs.existsSync('./convert')) fs.mkdirSync('./convert')
-        fs.writeFileSync('./convert/index.html', html)
-        const css =  await new Promise((res, rej) => exec('npx tailwindcss -i ./input.css -o ./convert/output.css --minify', (err, stdout, stderr) => {
+        if(!fs.existsSync(`${__dirname}/convert`)) fs.mkdirSync(`${__dirname}/convert`)
+        fs.writeFileSync(`${__dirname}/convert/index.html`, html)
+        
+        const css =  await new Promise((res, rej) => exec(`npx tailwindcss -i ${__dirname}/input.css -o ${__dirname}/convert/output.css --minify`, (err, stdout, stderr) => {
             if (err) {
                 console.error(err)
                 rej(err)
                 return
             }
-            const output = fs.readFileSync('./convert/output.css', 'utf8')
+            const output = fs.readFileSync(`${__dirname}/convert/output.css`, 'utf8')
             res(output)
         }))
         // this.clearOutputFolder()
@@ -89,7 +93,6 @@ export default class TailwindToInline {
             rule.nodes.forEach(node => { 
                 propObject[node.prop] = node.value
             })
-            console.log(rule.selector)
             result.push([`${rule.selector}`, propObject])
         })
         return new Map(result)
