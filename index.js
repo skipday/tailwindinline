@@ -5,6 +5,7 @@ import postcss from 'postcss'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
+import path from 'path'
 
 String.prototype.insert = function (index, string) {
     const ind = index < 0 ? this.length + index : index;
@@ -104,9 +105,22 @@ export default class TailwindToInline {
     }
 
     constructor(options) {
-        if(!options?.custom) return
-        else if(typeof options.custom !== 'string') throw new Error('Custom must be a string of css')
-        else this.defaultClasses = this.mapFromCss(options.custom)
+        if(options?.config && fs.existsSync(path.resolve(process.cwd(), options?.config))) {
+            import(path.resolve(process.cwd(), options.config)).then(userConfig => {
+                const config = userConfig.default
+                config.content = ["**/*.html"]
+                fs.writeFileSync(`${__dirname}/tailwind.config.js`, `/** @type {import('tailwindcss').Config} */ \n export default ${JSON.stringify(config)}`, 'utf8')
+                if(!options?.custom) return
+                else if(typeof options.custom !== 'string') throw new Error('Custom must be a string of css')
+                else this.defaultClasses = this.mapFromCss(options.custom)
+            }).catch(err => {
+                throw new Error('Error importing tailwind config. Please make sure the path is correct and the file is in es6 module format', err)
+            });
+        } else {
+            if(!options?.custom) return
+            else if(typeof options.custom !== 'string') throw new Error('Custom must be a string of css')
+            else this.defaultClasses = this.mapFromCss(options.custom)
+        }
     }
 
     convert(html) {
