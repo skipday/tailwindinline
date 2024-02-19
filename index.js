@@ -1,7 +1,6 @@
-import { createRequire } from 'node:module';
-const require = createRequire(import.meta.url);
-const classes = require('./classes.json')
-import { TAILWIND_DEFAULTS, CLASSES_IN_TAG, CLASS_ATTRIBUTE, CUSTOM_VALUE, MATCH_TAG, TAG_NAME, DEFAULTS_PER_TAG } from './CONSTANTS.js'
+import fs from 'fs'
+import { exec } from 'child_process'
+import { CLASSES_IN_TAG, CLASS_ATTRIBUTE, CUSTOM_VALUE, MATCH_TAG, TAG_NAME, DEFAULTS_PER_TAG } from './CONSTANTS.js'
 import postcss from 'postcss'
 
 String.prototype.insert = function (index, string) {
@@ -27,11 +26,14 @@ export default class TailwindToInline {
             let defaultValue = !value.includes('#') ? '4' : 'white';
             return Array.from([match.replace(CUSTOM_VALUE, defaultValue), value])
         }).split(' ').map(e => e.match(/,/g) ? e.split(',') : e);
-        return TAILWIND_DEFAULTS + this.cssClassStringFromArray(classArr)
+        return this.convertToString(this.defaultClasses.get('*,:after,:before')) + this.cssClassStringFromArray(classArr)
     }
     
-    main = (html) => {
+    main = async (html) => {
         if(!html) return
+
+        const css = await this.cssFromHtml(html)
+        this.defaultClasses = this.mapFromCss(css)
         return html.replace(MATCH_TAG, (match) => {
             let styles = ''
             match = match.replace(CLASSES_IN_TAG, (innerClassMatch, innerClasses) => {
@@ -52,20 +54,50 @@ export default class TailwindToInline {
         })
     }
 
-    constructor(options) {
-        if(!options?.custom) this.defaultClasses = new Map(classes)
-        else if(typeof options.custom !== 'string') throw new Error('Custom must be a string of css')
-        else { let result = []
-            const root = postcss.parse(options.custom)
-            root.walkRules(rule => {
-                const propObject = {}
-                rule.nodes.forEach(node => { 
-                    propObject[node.prop] = node.value
+    clearOutputFolder = () => {
+        fs.readdir('./convert', (err, files) => {
+            if (err) throw err
+            for (const file of files) {
+                fs.unlink(`./convert/${file}`, err => {
+                    if (err) throw err
                 })
-                result.push([`${rule.selector}`, propObject])
+            }
+        })
+    }
+
+    cssFromHtml = async (html) => {
+        fs.writeFileSync('./convert/index.html', html)
+        const css =  await new Promise((res, rej) => exec('npx tailwindcss -i ./input.css -o ./convert/output.css --minify', (err, stdout, stderr) => {
+            if (err) {
+                console.error(err)
+                rej(err)
+                return
+            }
+            const output = fs.readFileSync('./convert/output.css', 'utf8')
+            res(output)
+        }))
+        // this.clearOutputFolder()
+        return css
+    }
+
+    mapFromCss = (css) => {
+        const root = postcss.parse(css)
+        const result = []
+        root.walkRules(rule => {
+            const propObject = {}
+            rule.nodes.forEach(node => { 
+                propObject[node.prop] = node.value
             })
-            this.defaultClasses = new Map([...classes, ...result])
-        }
+            console.log(rule.selector)
+            result.push([`${rule.selector}`, propObject])
+        })
+        return new Map(result)
+    }
+
+    constructor(options) {
+        if(!options?.custom) return
+        else if(typeof options.custom !== 'string') throw new Error('Custom must be a string of css')
+        else this.defaultClasses = this.mapFromCss(options.custom)
     }
 
     convert(html) {

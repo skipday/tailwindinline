@@ -9,3 +9,7 @@ test('works with custom colors and sizes', () => {
     const tailwindClassesToTest = 'bg-[#ff00ee] text-[2px] mb-[400px]';
     expect(convert(`<div class="${tailwindClassesToTest}">Dont change this</div>`)).toMatch('<div class="bg-[#ff00ee] text-[2px] mb-[400px]" style="background-color: #ff00ee;  margin-bottom: 400px; box-sizing: border-box;">Dont change this</div>')
 })
+
+test('works with custom heights and widths', () => {
+    const tailwindClassesToTest = 'w-48 h-60 bg-[#F6F6F6] rounded-xl overflow-hidden relative'
+})
