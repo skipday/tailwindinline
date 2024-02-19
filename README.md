@@ -5,11 +5,17 @@ It enables you to at runtime convert from a html string with tailwind classes to
 
 Questions/comments/improvements/suggestions? Contributions welcome.
 
-```javascript
-npm install tailwindinline
+## Params
+* config: Optional path to your tailwind.config.js that you'd like to use with this library. Useful if you have custom theme extensions, like colors or fonts. (relative path)
+* custom: Custom css (string)
 
-import convert from 'tailwindinline'
-const htmlWithInlineStyles = convert('<div class="pt-2 pb-[40px] border-2 border-[#0f0]"></div>')
+```npm install tailwindinline```
+
+```javascript
+import TailwindToInline from 'tailwindinline'
+const twi = new TailwindInline({ config: './path/to/tailwind.config', custom: ".button: { background-color: 'red' }" })
+
+const htmlWithInlineStyles = twi.convert('<div class="pt-2 pb-[40px] border-2 border-[#0f0]"></div>')
 /*
 <div 
 	class="pt-2 pb-[40px] border-2 border-[#0f0]" 
@@ -25,5 +31,6 @@ const htmlWithInlineStyles = convert('<div class="pt-2 pb-[40px] border-2 border
 - [x] fix syntax of some classnames in classList.json (ex: placeholder:moz-[...])
 - [x] custom tailwind classes
 - [x] add all tailwind auto-added classes (those that makes sense for this usage)
-- [ ] import and use a custom tailwindconfig
-- [ ] implement more consistent regex file
+- [x] import and use a custom tailwindconfig
+- [x] implement more consistent regex file
+- [ ] rewrite this readme.md
