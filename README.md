@@ -9,6 +9,8 @@ Questions/comments/improvements/suggestions? Contributions welcome.
 * config: Optional path to your tailwind.config.js that you'd like to use with this library. Useful if you have custom theme extensions, like colors or fonts. (relative path)
 * custom: Custom css (string)
 
+
+## Installation
 ```npm install tailwindinline```
 
 ```javascript
