@@ -66,6 +66,7 @@ export default class TailwindToInline {
     }
 
     cssFromHtml = async (html) => {
+        if(!fs.existsSync('./convert')) fs.mkdirSync('./convert')
         fs.writeFileSync('./convert/index.html', html)
         const css =  await new Promise((res, rej) => exec('npx tailwindcss -i ./input.css -o ./convert/output.css --minify', (err, stdout, stderr) => {
             if (err) {
