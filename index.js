@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { exec } from 'child_process'
-import { CLASSES_IN_TAG, CLASS_ATTRIBUTE, CUSTOM_VALUE, MATCH_TAG, TAG_NAME, DEFAULTS_PER_TAG } from './CONSTANTS.js'
+import { CLASSES_IN_TAG, MATCH_TAG, TAG_NAME, DEFAULTS_PER_TAG } from './CONSTANTS.js'
 import postcss from 'postcss'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
@@ -77,7 +77,7 @@ export default class TailwindToInline {
     cssFromHtml = async (html) => {
         if(!fs.existsSync(`${__dirname}/convert`)) fs.mkdirSync(`${__dirname}/convert`)
         fs.writeFileSync(`${__dirname}/convert/index.html`, html)
-        
+
         const css =  await new Promise((res, rej) => exec(`npx tailwindcss -c ${__dirname}/tailwind.config.js -i ${__dirname}/input.css -o ${__dirname}/convert/output.css --minify`, (err, stdout, stderr) => {
             if (err) {
                 console.error(err)
