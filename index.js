@@ -17,18 +17,25 @@ export default class TailwindToInline {
     convertToString = (gottenClass, customvalue) => gottenClass ? Object.entries(gottenClass).map(([key, val]) => customvalue ? `${key}: ${customvalue};` : `${key}: ${val};`).join('') : '';
 
     cssClassStringFromArray = ([head, ...tail]) => {
-        let classStr, customValue;
-        if(typeof head !== 'string') [classStr, customValue] = head;
-        else classStr = head;
-        if(tail.length < 1) return this.convertToString(this.defaultClasses.get(`.${classStr}`), customValue ? customValue.replace(/\[|\]/g, '') : null)
-        return this.convertToString(this.defaultClasses.get(`.${classStr}`), customValue ? customValue.replace(/\[|\]/g, '') : null) + this.cssClassStringFromArray(tail)
+        let customValue;
+        console.log(head)
+        console.log(this.defaultClasses.get('.' + head))
+        if(tail.length < 1) return this.convertToString(this.defaultClasses.get(`.${head}`), customValue ? customValue.replace(/\[|\]/g, '') : null)
+        return this.convertToString(this.defaultClasses.get(`.${head}`), customValue ? customValue.replace(/\[|\]/g, '') : null) + this.cssClassStringFromArray(tail)
+    }
+
+    escapeAll = (str) => {
+        return str.replace(/\./g, '\\.') 
+        .replace(/\[/g, '\\[') 
+        .replace(/\]/g, '\\]') 
+        .replace(/\//g, '\\/')
+        .replace(/\(/g, '\\(')
+        .replace(/\)/g, '\\)')
+        .replace(/\#/g, '\\#')
     }
     
     convertCss = (classArr) => {
-        classArr = classArr.replace(CLASS_ATTRIBUTE, (match, value) => {
-            let defaultValue = !value.includes('#') ? '4' : 'white';
-            return Array.from([match.replace(CUSTOM_VALUE, defaultValue), value])
-        }).split(' ').map(e => e.match(/,/g) ? e.split(',') : e);
+        classArr = this.escapeAll(classArr).split(' ').map(e => e.match(/,/g) ? e.split(',') : e);
         return this.convertToString(this.defaultClasses.get('*,:after,:before')) + this.cssClassStringFromArray(classArr)
     }
     
