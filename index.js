@@ -18,8 +18,6 @@ export default class TailwindToInline {
 
     cssClassStringFromArray = ([head, ...tail]) => {
         let customValue;
-        console.log(head)
-        console.log(this.defaultClasses.get('.' + head))
         if(tail.length < 1) return this.convertToString(this.defaultClasses.get(`.${head}`), customValue ? customValue.replace(/\[|\]/g, '') : null)
         return this.convertToString(this.defaultClasses.get(`.${head}`), customValue ? customValue.replace(/\[|\]/g, '') : null) + this.cssClassStringFromArray(tail)
     }
