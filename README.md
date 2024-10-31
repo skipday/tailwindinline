@@ -15,7 +15,7 @@ Questions/comments/improvements/suggestions? Contributions welcome.
 
 ```javascript
 import TailwindToInline from 'tailwindinline'
-const twi = new TailwindInline({ config: './path/to/tailwind.config', custom: ".button: { background-color: 'red' }" })
+const twi = new TailwindToInline({ config: './path/to/tailwind.config', custom: ".button: { background-color: 'red' }" })
 
 const htmlWithInlineStyles = twi.convert('<div class="pt-2 pb-[40px] border-2 border-[#0f0]"></div>')
 /*
