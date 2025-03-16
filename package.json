@@ -1,6 +1,6 @@
 {
   "name": "tailwindinline",
-  "version": "0.3.7-beta.4",
+  "version": "0.3.7-beta.5",
   "type": "module",
   "description": "This package allows developers to convert HTML with Tailwind CSS classes into equivalent inline styles.",
   "main": "dist/index.js",

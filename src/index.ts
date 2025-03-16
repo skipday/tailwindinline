@@ -3,21 +3,22 @@ import { exec } from 'child_process'
 import { CLASSES_IN_TAG, MATCH_TAG, TAG_NAME, DEFAULTS_PER_TAG } from './CONSTANTS.js'
 import postcss from 'postcss'
 import path from 'path'
+import { fileURLToPath } from 'url'
 
-// Add type declaration for String prototype extension
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 declare global {
     interface String {
         insert(index: number, string: string): string;
     }
 }
 
-// Add the insert method to String prototype
 String.prototype.insert = function(index: number, string: string): string {
     const ind = index < 0 ? this.length + index : index;
     return this.substring(0, ind) + string + this.substring(ind);
 };
 
-// Define interfaces for the class
 interface TailwindOptions {
     config?: string;
     custom?: string;
