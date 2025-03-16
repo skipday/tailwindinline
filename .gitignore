@@ -7,3 +7,15 @@ tableFromJson.js
 classList_old.json
 test*.*
 convert
+dist/
+
+#env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.development
+.env.test
+.env.production
+
