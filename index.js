@@ -106,6 +106,9 @@ export default class TailwindToInline {
         if (options?.config) {
             this.configPromise = import(path.resolve(process.cwd(), options.config))
                 .then(userConfig => {
+                    if (!userConfig?.default || typeof userConfig.default !== 'object') {
+                        throw new Error('Invalid Tailwind config format');
+                    }
                     this.tailwindConfig = userConfig.default;
                     if (!this.tailwindConfig.content) {
                         this.tailwindConfig.content = ["**/*.html"];
@@ -114,19 +117,36 @@ export default class TailwindToInline {
                     }
                 })
                 .catch(err => {
-                    console.error('Error loading Tailwind config:', err);
+                    const error = new Error(`Failed to load Tailwind config: ${err.message}`);
+                    error.originalError = err;
+                    throw error;
                 });
         } else {
             this.configPromise = Promise.resolve();
         }
 
         if (options?.custom) {
-            if (typeof options.custom !== 'string') throw new Error('Custom must be a string of css');
-            this.customCSS = options.custom;
+            try {
+                // Validate CSS syntax
+                postcss.parse(options.custom);
+                this.customCSS = options.custom;
+            } catch (error) {
+                throw new Error(`Invalid custom CSS: ${error.message}`);
+            }
         }
     }
 
-    convert(html) {
-        return this.main(html)
+    async convert(html) {
+        if (typeof html !== 'string') {
+            throw new Error('HTML input must be a string');
+        }
+        if (html.trim().length === 0) {
+            throw new Error('HTML input cannot be empty');
+        }
+        try {
+            return await this.main(html);
+        } catch (error) {
+            throw new Error(`Failed to convert HTML: ${error.message}`);
+        }
     }
 }

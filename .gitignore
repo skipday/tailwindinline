@@ -1,9 +1,2 @@
 #directories
 node_modules/
-api/
-testingStuff.js
-classList.json
-tableFromJson.js
-classList_old.json
-test*.*
-convert
