@@ -1,15 +1,87 @@
-const { default: convert } = require('./index.js')
+import TailwindToInline from './index.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-test('works with various plain tailwind classes', () => {
-    const tailwindClassesToTest = 'bg-center bg-gray-500 border-blue-500 border-4 hidden flex-1 justify-items-auto h-56 w-2 mb-10 text-blue-300';
-    expect(convert(`<div class="${tailwindClassesToTest}">Dont change this</div>`)).toMatch('<div class="bg-center bg-gray-500 border-blue-500 border-4 hidden flex-1 justify-items-auto h-56 w-2 mb-10 text-blue-300" style="background-position: center; background-color: #a0aec0; border-color: #4299e1; border-width: 4px; display: none; flex: 1  1  0%;  height: 14rem; width: 0.5rem; margin-bottom: 2.5rem; color: #90cdf4; box-sizing: border-box;">Dont change this</div>')
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+describe('TailwindToInline', () => {
+    let twi;
+
+    beforeEach(() => {
+        twi = new TailwindToInline();
+    });
+
+    test('converts basic Tailwind classes to inline styles', async () => {
+        const html = '<div class="pt-2 pb-4">Test</div>';
+        const result = await twi.convert(html);
+        expect(result).toMatch("<div class=\"pt-2 pb-4\" style=\"padding-top: 0.5rem;padding-bottom: 1rem;\">Test</div>");
+    });
+
+    test('handles arbitrary values correctly', async () => {
+        const html = '<div class="pt-[20px] text-[#ff0000] w-[50%]">Test</div>';
+        const result = await twi.convert(html);
+        expect(result).toMatch(/style=".*padding-top: 20px.*--tw-text-opacity: 1.*color: rgb\(255 0 0 \/ var\(--tw-text-opacity.*\).*"/);
+    });
+
+    test('preserves existing inline styles', async () => {
+        const html = '<div class="pt-2" style="color: red;">Test</div>';
+        const result = await twi.convert(html);
+        expect(result).toMatch(/style=".*padding-top: 0\.5rem.*color: red.*"/);
+    });
+
+    test('handles multiple classes and complex values', async () => {
+        const html = '<div class="bg-blue-500 text-white p-4 rounded-lg">Test</div>';
+        const result = await twi.convert(html);
+        expect(result).toMatch(/style=".*background-color:.*rgb\(59 130 246.*color:.*rgb\(255 255 255.*padding: 1rem.*border-radius: 0\.5rem.*"/);
+    });
+
+    describe('with custom Tailwind config', () => {
+        test('applies custom theme extensions', async () => {
+            const configPath = path.join(__dirname, 'test.config.js');
+            const twiWithConfig = new TailwindToInline({ config: configPath });
+            
+            const html = '<div class="bg-custom-blue text-custom-red p-custom">Test</div>';
+            const result = await twiWithConfig.convert(html);
+            
+            expect(result).toMatch(/style=".*background-color: rgb\(18 52 255.*color: rgb\(255 18 52.*padding: 3rem.*"/);
+        });
+    });
+
+    describe('with custom CSS', () => {
+        test('applies custom CSS styles', async () => {
+            const customCSS = `
+                .custom-button {
+                    background-color: purple;
+                    border-radius: 9999px;
+                }
+            `;
+            const twiWithCustom = new TailwindToInline({ custom: customCSS });
+            
+            const html = '<button class="custom-button p-4">Test</button>';
+            const result = await twiWithCustom.convert(html);
+            
+            expect(result).toMatch(/style=".*background-color: purple.*border-radius: 9999px.*padding: 1rem.*"/);
+        });
+    });
+
+    describe('with both config and custom CSS', () => {
+        test('applies both custom theme and custom CSS', async () => {
+            const configPath = path.join(__dirname, 'test.config.js');
+            const customCSS = `
+                .custom-button {
+                    background-color: purple;
+                    border-radius: 9999px;
+                }
+            `;
+            const twiWithBoth = new TailwindToInline({ 
+                config: configPath,
+                custom: customCSS 
+            });
+            
+            const html = '<button class="custom-button bg-custom-blue p-custom">Test</button>';
+            const result = await twiWithBoth.convert(html);
+            
+            expect(result).toMatch(/style=".*background-color: purple.*border-radius: 9999px.*padding: 3rem.*"/);
+        });
+    });
 });
-
-test('works with custom colors and sizes', () => {
-    const tailwindClassesToTest = 'bg-[#ff00ee] text-[2px] mb-[400px]';
-    expect(convert(`<div class="${tailwindClassesToTest}">Dont change this</div>`)).toMatch('<div class="bg-[#ff00ee] text-[2px] mb-[400px]" style="background-color: #ff00ee;  margin-bottom: 400px; box-sizing: border-box;">Dont change this</div>')
-})
-
-test('works with custom heights and widths', () => {
-    const tailwindClassesToTest = 'w-48 h-60 bg-[#F6F6F6] rounded-xl overflow-hidden relative'
-})
